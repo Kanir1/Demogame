@@ -46,7 +46,8 @@ Spin button -> SpinController -> IServerApi.Spin(bet) -> SpinResult -> OnSpinRes
 
 ## Project structure
 - Assets/Scripts/Config: GameConfig and config loading
-- Assets/Scripts/Server: IServerApi, MockServer, result and request types
+- Assets/Scripts/Server: MockServer (implementation)
+- Assets/Scripts/Server/Api: IServerApi and the request/result types (the contract), one type per file
 - Assets/Scripts/Core: PlayerState, SpinController, EnergyTimer, VillageController
 - Assets/Scripts/UI: ReelView, HudView, PopupManager, BuildingView
 - Assets/Scripts/Pooling: CoinFlyPool
