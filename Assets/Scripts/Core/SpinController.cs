@@ -13,6 +13,8 @@ namespace DemoCoinMaster.Core
     /// Flow: RequestSpin -> OnSpinStarted -> IServerApi.SpinAsync -> PlayerState.ApplySnapshot
     ///       -> OnSpinResult (success) or OnSpinFailed (error).
     /// </summary>
+    // After GameBootstrap (-1000), before views (0), so views can read CurrentBet in OnEnable.
+    [DefaultExecutionOrder(-500)]
     public class SpinController : MonoBehaviour
     {
         [SerializeField] private GameBootstrap bootstrap;
