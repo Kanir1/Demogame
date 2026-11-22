@@ -13,4 +13,7 @@ A Unity 6 prototype of a Coin Master-style spin feature. See `CLAUDE.md` for the
 - **Lazy energy refill.** The server keeps no timer. On each request it adds the energy earned since `lastEnergyRefillTime`, using server time. This is how real backends avoid running one timer per player.
 - **`MockServer` is plain C#, not a MonoBehaviour.** It can be unit-tested with a fixed seed and a fake clock, and swapped for a real backend in `GameBootstrap` alone.
 - **`PlayerSnapshot` is a readonly struct.** Server responses carry balances without heap allocations, and the client only overwrites its copy and never edits it.
+- **`SpinController` has no UI references.** The Spin button calls `RequestSpin()` through its Inspector OnClick, and views subscribe to `OnSpinStarted` / `OnSpinResult` / `OnSpinFailed` / `OnBetChanged`. The double-tap guard (`IsSpinning`) is set before the first `await`, so a second tap in the same frame is ignored.
+- **No client-side energy check before spinning.** The server adds refill energy lazily, so the client's energy can be out of date. A local check could block a spin the server would allow. The server decides, and a rejection comes back as `NotEnoughEnergy`.
+- **Balances are applied on rule rejections but not on `NetworkError`.** A rejection carries the server's real balances. A network failure means no response arrived, so there's nothing trustworthy to apply.
 - **`GameBootstrap` is the composition root** and runs first (`DefaultExecutionOrder(-1000)`), so other components can read the services in Awake/OnEnable.

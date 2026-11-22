@@ -52,29 +52,5 @@ namespace DemoCoinMaster.Core
                 // Object destroyed while waiting (scene unload / exit Play mode). Nothing to do.
             }
         }
-
-        // Temporary test hook until the Spin UI exists: right-click the component header -> Debug Spin x1.
-        [ContextMenu("Debug Spin x1")]
-        private async void DebugSpin()
-        {
-            if (!Application.isPlaying || Server == null) return;
-            try
-            {
-                SpinResult result = await Server.SpinAsync(1, destroyCancellationToken);
-                if (result.Success)
-                {
-                    PlayerState.ApplySnapshot(result.Snapshot);
-                    Debug.Log($"[DebugSpin] {string.Join(" | ", result.Symbols)} -> {result.Outcome} " +
-                              $"+{result.CoinsWon} coins +{result.EnergyWon} energy +{result.ShieldsWon} shield" +
-                              (result.ShieldOverflow ? " (overflow)" : "") +
-                              $" | coins={PlayerState.Coins} energy={PlayerState.Energy} shields={PlayerState.Shields}");
-                }
-                else
-                {
-                    Debug.LogWarning($"[DebugSpin] Failed: {result.Error}");
-                }
-            }
-            catch (OperationCanceledException) { }
-        }
     }
 }
