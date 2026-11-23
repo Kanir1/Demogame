@@ -68,6 +68,8 @@ namespace DemoCoinMaster.Config
         [Tooltip("Refill stops at this cap. Energy won from spins may go above it.")]
         [SerializeField, Min(1)] private int maxEnergy = 50;
         [SerializeField, Min(1)] private float energyRefillSeconds = 10f;
+        [Tooltip("If a refill sync comes back early (clock estimate ahead of the server), wait this long before asking again.")]
+        [SerializeField, Min(0.1f)] private float energySyncRetrySeconds = 1f;
 
         [Header("Starting balances")]
         [SerializeField, Min(0)] private int startingCoins = 1000;
@@ -100,6 +102,7 @@ namespace DemoCoinMaster.Config
         public int EnergyCostPerSpin => energyCostPerSpin;
         public int MaxEnergy => maxEnergy;
         public float EnergyRefillSeconds => energyRefillSeconds;
+        public float EnergySyncRetrySeconds => energySyncRetrySeconds;
 
         public int StartingCoins => startingCoins;
         public int StartingEnergy => startingEnergy;

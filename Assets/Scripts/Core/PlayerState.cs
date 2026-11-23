@@ -26,8 +26,16 @@ namespace DemoCoinMaster.Core
         /// <summary>Raised after any snapshot is applied.</summary>
         public event Action<PlayerState> OnBalanceChanged;
 
-        public void ApplySnapshot(in PlayerSnapshot snapshot)
+        /// <summary>
+        /// Overwrites the local copy with the server's. Returns false (and changes nothing) if the snapshot
+        /// is older than the one already applied: two requests can finish out of order
+        /// (e.g. an energy sync sent before a spin but arriving after it).
+        /// </summary>
+        public bool ApplySnapshot(in PlayerSnapshot snapshot)
         {
+            if (HasSynced && snapshot.ServerTime < ServerTime)
+                return false;
+
             Coins = snapshot.Coins;
             Energy = snapshot.Energy;
             Shields = snapshot.Shields;
@@ -37,6 +45,7 @@ namespace DemoCoinMaster.Core
             HasSynced = true;
 
             OnBalanceChanged?.Invoke(this);
+            return true;
         }
     }
 }

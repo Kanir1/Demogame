@@ -5,9 +5,8 @@ using UnityEngine;
 namespace DemoCoinMaster.UI
 {
     /// <summary>
-    /// Shows coins, energy and shields. Pure view: it only reads PlayerState and redraws
-    /// when OnBalanceChanged fires. No polling in Update.
-    /// The energy refill countdown is added on Day 2 (EnergyTimer).
+    /// Shows coins, energy, shields and the energy refill countdown. Pure view: it redraws only
+    /// when PlayerState.OnBalanceChanged or EnergyTimer.OnCountdownChanged fires. No polling in Update.
     /// </summary>
     public class HudView : MonoBehaviour
     {
@@ -15,6 +14,10 @@ namespace DemoCoinMaster.UI
         [SerializeField] private TMP_Text coinsText;
         [SerializeField] private TMP_Text energyText;
         [SerializeField] private TMP_Text shieldsText;
+
+        [Header("Energy refill countdown (optional)")]
+        [SerializeField] private EnergyTimer energyTimer;
+        [SerializeField] private TMP_Text energyTimerText;
 
         private PlayerState playerState;
 
@@ -32,11 +35,18 @@ namespace DemoCoinMaster.UI
             // If the first sync already happened before this view was enabled, draw it now.
             if (playerState.HasSynced) Refresh(playerState);
             else SetLoading();
+
+            if (energyTimer != null && energyTimerText != null)
+            {
+                energyTimer.OnCountdownChanged += RefreshCountdown;
+                RefreshCountdown(energyTimer.SecondsUntilNextRefill);
+            }
         }
 
         private void OnDisable()
         {
             if (playerState != null) playerState.OnBalanceChanged -= Refresh;
+            if (energyTimer != null) energyTimer.OnCountdownChanged -= RefreshCountdown;
         }
 
         private void Refresh(PlayerState state)
@@ -45,6 +55,14 @@ namespace DemoCoinMaster.UI
             coinsText.text = $"Coins {state.Coins:N0}";
             energyText.text = $"Energy {state.Energy}/{bootstrap.Config.MaxEnergy}";
             shieldsText.text = $"Shields {state.Shields}/{bootstrap.Config.MaxShields}";
+        }
+
+        private void RefreshCountdown(int seconds)
+        {
+            // Fires at most once per second (EnergyTimer only raises it when the number changes).
+            energyTimerText.text = seconds == EnergyTimer.NotRefilling
+                ? "Full"
+                : $"+1 in {seconds / 60}:{seconds % 60:00}";
         }
 
         private void SetLoading()
