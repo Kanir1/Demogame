@@ -1,4 +1,4 @@
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     /// <summary>What a spin resolved to. Views map this to popups/effects.</summary>
     public enum SpinOutcome

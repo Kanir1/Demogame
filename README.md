@@ -1,6 +1,8 @@
-# Demo Coin Master: Mini Spin Feature
+# Spin Village: Mini Spin Feature
 
-A Unity 6 prototype of a Coin Master-style spin feature. See `CLAUDE.md` for the architecture and `AI_LOG.md` for how AI was used.
+A Unity 6 learning prototype of a slot-machine spin feature, inspired by Coin Master. See `CLAUDE.md` for the architecture and `AI_LOG.md` for how AI was used.
+
+> Personal, non-commercial learning project. Not affiliated with or endorsed by Moon Active. Coin Master is a trademark of Moon Active. All code is original, and no Coin Master art, audio or other assets are used.
 
 ## Decisions (non-obvious)
 

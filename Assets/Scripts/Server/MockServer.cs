@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using DemoCoinMaster.Config;
+using SpinVillage.Config;
 using UnityEngine;
 
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     /// <summary>
     /// In-process fake backend. Owns the balances and every rule about them.

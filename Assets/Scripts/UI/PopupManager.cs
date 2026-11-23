@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using DemoCoinMaster.Core;
-using DemoCoinMaster.Server;
+using SpinVillage.Core;
+using SpinVillage.Server;
 using UnityEngine;
 
-namespace DemoCoinMaster.UI
+namespace SpinVillage.UI
 {
     public enum PopupType
     {

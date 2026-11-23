@@ -1,4 +1,4 @@
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     public class UpgradeResult
     {

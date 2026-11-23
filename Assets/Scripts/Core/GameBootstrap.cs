@@ -1,9 +1,9 @@
 using System;
-using DemoCoinMaster.Config;
-using DemoCoinMaster.Server;
+using SpinVillage.Config;
+using SpinVillage.Server;
 using UnityEngine;
 
-namespace DemoCoinMaster.Core
+namespace SpinVillage.Core
 {
     /// <summary>
     /// Composition root: builds the config, server and player state once, and hands them out.

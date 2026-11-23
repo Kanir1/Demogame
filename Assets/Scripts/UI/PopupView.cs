@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DemoCoinMaster.UI
+namespace SpinVillage.UI
 {
     /// <summary>
     /// Draws one popup: a full-screen blocker, a title, a message and an OK button.

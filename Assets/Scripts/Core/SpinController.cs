@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DemoCoinMaster.Server;
+using SpinVillage.Server;
 using UnityEngine;
 
-namespace DemoCoinMaster.Core
+namespace SpinVillage.Core
 {
     /// <summary>
     /// Owns the spin flow: current bet, double-tap protection, the server call, and the events

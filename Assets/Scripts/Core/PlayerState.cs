@@ -1,7 +1,7 @@
 using System;
-using DemoCoinMaster.Server;
+using SpinVillage.Server;
 
-namespace DemoCoinMaster.Core
+namespace SpinVillage.Core
 {
     /// <summary>
     /// The client's read-only copy of the player's balances.

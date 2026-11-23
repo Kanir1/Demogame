@@ -1,8 +1,8 @@
-using DemoCoinMaster.Core;
+using SpinVillage.Core;
 using TMPro;
 using UnityEngine;
 
-namespace DemoCoinMaster.UI
+namespace SpinVillage.UI
 {
     /// <summary>
     /// Shows coins, energy, shields and the energy refill countdown. Pure view: it redraws only

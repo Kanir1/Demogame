@@ -1,10 +1,10 @@
-using DemoCoinMaster.Core;
-using DemoCoinMaster.Server;
+using SpinVillage.Core;
+using SpinVillage.Server;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DemoCoinMaster.UI
+namespace SpinVillage.UI
 {
     /// <summary>
     /// Spin and Bet buttons, the bet label, and a short reward line ("+100 coins").

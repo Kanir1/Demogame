@@ -1,4 +1,4 @@
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     /// <summary>Why a request was rejected. None = success.</summary>
     public enum ServerError

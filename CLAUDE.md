@@ -1,6 +1,6 @@
-# Demo Coin Master: Mini Spin Feature
+# Spin Village: Mini Spin Feature
 
-A small Unity 6 (2D, mobile) prototype of a Coin Master-style slot machine: spin energy, a bet multiplier, symbol outcomes and one village building to upgrade.
+A small Unity 6 (2D, mobile) prototype of a slot-machine feature inspired by Coin Master: spin energy, a bet multiplier, symbol outcomes and one village building to upgrade.
 It is a portfolio project for a job interview, so a clean, explainable architecture matters more than visuals. Placeholder art is fine.
 
 ## Features
@@ -46,6 +46,7 @@ Spin button -> SpinController -> IServerApi.Spin(bet) -> SpinResult -> OnSpinRes
 
 ## Project structure
 - Assets/Scripts/Config: GameConfig and config loading
+- Root namespace: SpinVillage (SpinVillage.Config, .Server, .Core, .UI)
 - Assets/Scripts/Server: MockServer (implementation)
 - Assets/Scripts/Server/Api: IServerApi and the request/result types (the contract), one type per file
 - Assets/Scripts/Core: PlayerState, SpinController, EnergyTimer, VillageController

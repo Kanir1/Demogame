@@ -1,12 +1,12 @@
 using UnityEngine;
 
-namespace DemoCoinMaster.Config
+namespace SpinVillage.Config
 {
     /// <summary>
     /// Designer-editable config asset. Acts as the fallback when remote (JSON) config
     /// is missing or invalid. Runtime code should read GameConfigData, never edit this asset.
     /// </summary>
-    [CreateAssetMenu(fileName = "GameConfig", menuName = "DemoCoinMaster/Game Config")]
+    [CreateAssetMenu(fileName = "GameConfig", menuName = "SpinVillage/Game Config")]
     public class GameConfig : ScriptableObject
     {
         [SerializeField] private GameConfigData data = new GameConfigData();

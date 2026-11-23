@@ -1,6 +1,6 @@
-using DemoCoinMaster.Config;
+using SpinVillage.Config;
 
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     public class SpinResult
     {

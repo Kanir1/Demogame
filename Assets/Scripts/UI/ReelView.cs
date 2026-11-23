@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
-using DemoCoinMaster.Config;
-using DemoCoinMaster.Core;
-using DemoCoinMaster.Server;
+using SpinVillage.Config;
+using SpinVillage.Core;
+using SpinVillage.Server;
 using TMPro;
 using UnityEngine;
 
-namespace DemoCoinMaster.UI
+namespace SpinVillage.UI
 {
     /// <summary>
     /// Animates the reels and stops them on the symbols the server picked.

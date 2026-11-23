@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DemoCoinMaster.Config
+namespace SpinVillage.Config
 {
     /// <summary>Weight for "all reels land on this symbol". Higher = more likely.</summary>
     [Serializable]

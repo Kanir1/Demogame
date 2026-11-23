@@ -1,9 +1,9 @@
 using System;
-using DemoCoinMaster.Config;
-using DemoCoinMaster.Server;
+using SpinVillage.Config;
+using SpinVillage.Server;
 using UnityEngine;
 
-namespace DemoCoinMaster.Core
+namespace SpinVillage.Core
 {
     /// <summary>
     /// Shows when the next energy refill happens, using server time only.

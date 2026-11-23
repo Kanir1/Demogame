@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
 
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     /// <summary>
     /// Everything the client may ask the server. The only way balances change.

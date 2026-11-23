@@ -1,4 +1,4 @@
-namespace DemoCoinMaster.Config
+namespace SpinVillage.Config
 {
     /// <summary>Symbols that can appear on a reel.</summary>
     public enum SymbolType

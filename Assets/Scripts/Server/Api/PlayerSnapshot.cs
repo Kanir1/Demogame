@@ -1,4 +1,4 @@
-namespace DemoCoinMaster.Server
+namespace SpinVillage.Server
 {
     /// <summary>
     /// Read-only copy of the player's balances as the server sees them.
