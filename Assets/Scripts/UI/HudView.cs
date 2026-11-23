@@ -19,7 +19,11 @@ namespace DemoCoinMaster.UI
         [SerializeField] private EnergyTimer energyTimer;
         [SerializeField] private TMP_Text energyTimerText;
 
+        [Header("Optional: wait for reels before showing new balances")]
+        [SerializeField] private ReelView reelView;
+
         private PlayerState playerState;
+        private bool refreshPending;
 
         private void OnEnable()
         {
@@ -41,15 +45,37 @@ namespace DemoCoinMaster.UI
                 energyTimer.OnCountdownChanged += RefreshCountdown;
                 RefreshCountdown(energyTimer.SecondsUntilNextRefill);
             }
+
+            if (reelView != null) reelView.OnPresentationEnded += HandlePresentationEnded;
         }
 
         private void OnDisable()
         {
             if (playerState != null) playerState.OnBalanceChanged -= Refresh;
             if (energyTimer != null) energyTimer.OnCountdownChanged -= RefreshCountdown;
+            if (reelView != null) reelView.OnPresentationEnded -= HandlePresentationEnded;
         }
 
         private void Refresh(PlayerState state)
+        {
+            // PlayerState is already updated (it's the truth); only the *display* waits, so the coin
+            // counter doesn't jump before the reels show why.
+            if (reelView != null && reelView.IsPresenting)
+            {
+                refreshPending = true;
+                return;
+            }
+
+            refreshPending = false;
+            Draw(state);
+        }
+
+        private void HandlePresentationEnded()
+        {
+            if (refreshPending) Refresh(playerState);
+        }
+
+        private void Draw(PlayerState state)
         {
             // Events fire only when balances change, so this string formatting is not per-frame.
             coinsText.text = $"Coins {state.Coins:N0}";

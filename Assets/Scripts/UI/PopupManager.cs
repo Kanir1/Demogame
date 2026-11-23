@@ -42,6 +42,8 @@ namespace DemoCoinMaster.UI
         [SerializeField] private GameBootstrap bootstrap;
         [SerializeField] private SpinController spinController;
         [SerializeField] private PopupView popupView;
+        [Tooltip("Optional. If set, reward popups (Raid, Attack, Shields full) wait until the reels stop.")]
+        [SerializeField] private ReelView reelView;
 
         private readonly Queue<PopupRequest> queue = new Queue<PopupRequest>();
         private bool isShowing;
@@ -58,18 +60,20 @@ namespace DemoCoinMaster.UI
                 return;
             }
 
-            spinController.OnSpinResult += HandleSpinResult;
             spinController.OnSpinFailed += HandleSpinFailed;
             popupView.OnCloseClicked += HandleCloseClicked;
+            if (reelView != null) reelView.OnReelsStopped += HandleSpinResult;
+            else spinController.OnSpinResult += HandleSpinResult;
         }
 
         private void OnDisable()
         {
             if (spinController != null)
             {
-                spinController.OnSpinResult -= HandleSpinResult;
                 spinController.OnSpinFailed -= HandleSpinFailed;
+                if (reelView == null) spinController.OnSpinResult -= HandleSpinResult;
             }
+            if (reelView != null) reelView.OnReelsStopped -= HandleSpinResult;
             if (popupView != null) popupView.OnCloseClicked -= HandleCloseClicked;
         }
 

@@ -19,6 +19,8 @@ namespace DemoCoinMaster.UI
         [SerializeField] private Button betButton;
         [SerializeField] private TMP_Text betLabel;
         [SerializeField] private TMP_Text statusText;
+        [Tooltip("Optional. If set, buttons unlock and the reward shows only after the reels stop.")]
+        [SerializeField] private ReelView reelView;
 
         private void OnEnable()
         {
@@ -32,12 +34,13 @@ namespace DemoCoinMaster.UI
             betButton.onClick.AddListener(spinController.CycleBet);
 
             spinController.OnSpinStarted += HandleSpinStarted;
-            spinController.OnSpinResult += HandleSpinResult;
             spinController.OnSpinFailed += HandleSpinFailed;
             spinController.OnBetChanged += HandleBetChanged;
+            if (reelView != null) reelView.OnReelsStopped += HandleSpinResult;
+            else spinController.OnSpinResult += HandleSpinResult;
 
             HandleBetChanged(spinController.CurrentBet);
-            SetInteractable(!spinController.IsSpinning);
+            SetInteractable(!spinController.IsSpinning && (reelView == null || !reelView.IsPresenting));
             statusText.text = string.Empty;
         }
 
@@ -49,9 +52,10 @@ namespace DemoCoinMaster.UI
             betButton.onClick.RemoveListener(spinController.CycleBet);
 
             spinController.OnSpinStarted -= HandleSpinStarted;
-            spinController.OnSpinResult -= HandleSpinResult;
             spinController.OnSpinFailed -= HandleSpinFailed;
             spinController.OnBetChanged -= HandleBetChanged;
+            if (reelView != null) reelView.OnReelsStopped -= HandleSpinResult;
+            else spinController.OnSpinResult -= HandleSpinResult;
         }
 
         private void HandleSpinStarted(int bet)

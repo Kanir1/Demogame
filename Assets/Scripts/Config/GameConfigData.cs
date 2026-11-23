@@ -79,6 +79,16 @@ namespace DemoCoinMaster.Config
         [Tooltip("Cost to reach level 1, 2, 3... Max level = array length.")]
         [SerializeField] private int[] buildingUpgradeCosts = { 500, 1500, 4000, 10000, 25000 };
 
+        [Header("Reel presentation")]
+        [Tooltip("Reels spin at least this long, even if the server answers faster.")]
+        [SerializeField, Min(0f)] private float reelMinSpinSeconds = 0.8f;
+        [Tooltip("Delay between one reel stopping and the next.")]
+        [SerializeField, Min(0f)] private float reelStopIntervalSeconds = 0.25f;
+        [Tooltip("How often a spinning reel shows a new random symbol.")]
+        [SerializeField, Min(0.01f)] private float reelSymbolChangeSeconds = 0.05f;
+        [Tooltip("Pause after the last reel lands before rewards/popups appear, so the player sees the match first.")]
+        [SerializeField, Min(0f)] private float reelResultHoldSeconds = 0.6f;
+
         [Header("UI")]
         [Tooltip("A new popup ignores taps for this long, so a double tap can't close two popups at once.")]
         [SerializeField, Min(0f)] private float popupInputLockSeconds = 0.3f;
@@ -113,6 +123,11 @@ namespace DemoCoinMaster.Config
 
         public IReadOnlyList<int> BuildingUpgradeCosts => buildingUpgradeCosts;
         public int MaxBuildingLevel => buildingUpgradeCosts?.Length ?? 0;
+
+        public float ReelMinSpinSeconds => reelMinSpinSeconds;
+        public float ReelStopIntervalSeconds => reelStopIntervalSeconds;
+        public float ReelSymbolChangeSeconds => reelSymbolChangeSeconds;
+        public float ReelResultHoldSeconds => reelResultHoldSeconds;
 
         public float PopupInputLockSeconds => popupInputLockSeconds;
 
