@@ -288,6 +288,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DemoCoinMaster.Core.GameBootstrap
   configAsset: {fileID: 11400000, guid: 6f47f411c10838f408ef174fac69f40a, type: 2}
+  useRemoteConfig: 1
+  remoteConfigPath: Config/game_config
 --- !u!4 &132940752
 Transform:
   m_ObjectHideFlags: 0

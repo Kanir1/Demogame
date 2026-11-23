@@ -14,9 +14,15 @@ namespace SpinVillage.Core
     [DefaultExecutionOrder(-1000)]
     public class GameBootstrap : MonoBehaviour
     {
+        [Tooltip("Designer defaults. Always used as the base, and as the fallback if the remote config is bad.")]
         [SerializeField] private GameConfig configAsset;
+        [Tooltip("Untick to ignore the remote JSON and run on the asset only (e.g. to compare).")]
+        [SerializeField] private bool useRemoteConfig = true;
+        [Tooltip("Path inside a Resources folder, without extension. Stands in for a download URL.")]
+        [SerializeField] private string remoteConfigPath = "Config/game_config";
 
         public GameConfigData Config { get; private set; }
+        public ConfigSource ConfigSource { get; private set; }
         public IServerApi Server { get; private set; }
         public PlayerState PlayerState { get; private set; }
 
@@ -29,8 +35,11 @@ namespace SpinVillage.Core
                 return;
             }
 
-            // Day 2: try the remote JSON config first, fall back to this asset.
-            Config = configAsset.CreateRuntimeCopy();
+            Config = ConfigLoader.Load(configAsset, useRemoteConfig ? remoteConfigPath : null, out ConfigSource source);
+            ConfigSource = source;
+            Debug.Log($"[GameBootstrap] Config: {Config.ConfigVersion} (source: {source})", this);
+
+            // The loader already rejects a bad remote config. This catches a broken asset itself.
             foreach (var error in Config.Validate())
                 Debug.LogError($"[GameBootstrap] Config error: {error}", this);
 

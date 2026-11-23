@@ -32,6 +32,10 @@ namespace SpinVillage.Config
     [Serializable]
     public class GameConfigData
     {
+        [Header("Version")]
+        [Tooltip("Label of this config (e.g. a remote config version). Logged at startup so bug reports show which config was active.")]
+        [SerializeField] private string configVersion = "local-asset";
+
         [Header("Reels")]
         [SerializeField, Min(1)] private int reelCount = 3;
         [Tooltip("Weight of a spin where the reels do NOT match (tiny reward).")]
@@ -98,6 +102,7 @@ namespace SpinVillage.Config
         [SerializeField, Min(0)] private float serverMaxDelaySeconds = 0.6f;
         [SerializeField, Range(0f, 1f)] private float serverFailureChance = 0.05f;
 
+        public string ConfigVersion => configVersion;
         public int ReelCount => reelCount;
         public int MixedWeight => mixedWeight;
         public IReadOnlyList<SymbolWeight> SymbolWeights => symbolWeights;
@@ -135,23 +140,53 @@ namespace SpinVillage.Config
         public float ServerMaxDelaySeconds => serverMaxDelaySeconds;
         public float ServerFailureChance => serverFailureChance;
 
-        /// <summary>Returns a list of problems. Empty list = config is usable.</summary>
+        /// <summary>
+        /// Returns a list of problems. Empty list = config is usable.
+        /// [Min]/[Range] only guard the Inspector; JSON bypasses them, so every rule is checked here too.
+        /// </summary>
         public List<string> Validate()
         {
             var errors = new List<string>();
             if (reelCount < 1) errors.Add("reelCount must be >= 1");
+
+            if (mixedWeight < 0) errors.Add("mixedWeight must be >= 0");
             if (symbolWeights == null || symbolWeights.Count == 0) errors.Add("symbolWeights is empty");
 
             int total = mixedWeight;
             if (symbolWeights != null)
-                foreach (var w in symbolWeights) total += Mathf.Max(0, w.Weight);
+                foreach (var w in symbolWeights)
+                {
+                    if (w == null) { errors.Add("symbolWeights has an empty entry"); continue; }
+                    if (w.Weight < 0) errors.Add($"weight for {w.Symbol} must be >= 0");
+                    total += Mathf.Max(0, w.Weight);
+                }
             if (total <= 0) errors.Add("total outcome weight must be > 0");
+
+            if (mixedCoinReward < 0 || coinReward < 0 || coinBagReward < 0 || attackCoinReward < 0 ||
+                raidCoinReward < 0 || energySpinReward < 0 || shieldOverflowCoins < 0)
+                errors.Add("rewards must be >= 0");
+            if (maxShields < 0) errors.Add("maxShields must be >= 0");
 
             if (betMultipliers == null || betMultipliers.Length == 0) errors.Add("betMultipliers is empty");
             else foreach (var b in betMultipliers) if (b < 1) errors.Add("bet multipliers must be >= 1");
 
+            if (energyCostPerSpin < 1) errors.Add("energyCostPerSpin must be >= 1");
+            if (maxEnergy < 1) errors.Add("maxEnergy must be >= 1");
+            if (energyRefillSeconds <= 0f) errors.Add("energyRefillSeconds must be > 0");
+            if (energySyncRetrySeconds <= 0f) errors.Add("energySyncRetrySeconds must be > 0");
+            if (startingCoins < 0 || startingEnergy < 0) errors.Add("starting balances must be >= 0");
+
             if (buildingUpgradeCosts == null || buildingUpgradeCosts.Length == 0) errors.Add("buildingUpgradeCosts is empty");
+            else foreach (var c in buildingUpgradeCosts) if (c < 0) errors.Add("building costs must be >= 0");
+
+            if (reelSymbolChangeSeconds <= 0f) errors.Add("reelSymbolChangeSeconds must be > 0");
+            if (reelMinSpinSeconds < 0f || reelStopIntervalSeconds < 0f || reelResultHoldSeconds < 0f ||
+                popupInputLockSeconds < 0f)
+                errors.Add("UI timings must be >= 0");
+
+            if (serverMinDelaySeconds < 0f) errors.Add("serverMinDelaySeconds must be >= 0");
             if (serverMaxDelaySeconds < serverMinDelaySeconds) errors.Add("serverMaxDelaySeconds < serverMinDelaySeconds");
+            if (serverFailureChance < 0f || serverFailureChance > 1f) errors.Add("serverFailureChance must be 0..1");
             return errors;
         }
     }
