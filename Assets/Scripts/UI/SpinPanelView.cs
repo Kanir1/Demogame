@@ -7,10 +7,10 @@ using UnityEngine.UI;
 namespace DemoCoinMaster.UI
 {
     /// <summary>
-    /// Spin and Bet buttons, the bet label, and a temporary status line.
+    /// Spin and Bet buttons, the bet label, and a short reward line ("+100 coins").
     /// Wires the buttons in code (not Inspector OnClick), so the hookup is visible in a code review
     /// and can't silently break when someone renames a method.
-    /// The status line is a placeholder until PopupManager exists (Day 2).
+    /// Errors and big moments (Raid, Attack, Shields full) are shown by PopupManager.
     /// </summary>
     public class SpinPanelView : MonoBehaviour
     {
@@ -70,7 +70,7 @@ namespace DemoCoinMaster.UI
         private void HandleSpinFailed(ServerError error)
         {
             SetInteractable(true);
-            statusText.text = DescribeError(error);
+            statusText.text = string.Empty; // PopupManager shows errors
         }
 
         private void HandleBetChanged(int bet) => betLabel.text = $"BET x{bet}";
@@ -91,16 +91,6 @@ namespace DemoCoinMaster.UI
                 case SpinOutcome.Shield:
                     return r.ShieldOverflow ? $"Shields full! +{r.CoinsWon:N0} coins" : "+1 Shield";
                 default: return $"+{r.CoinsWon:N0} coins";
-            }
-        }
-
-        private static string DescribeError(ServerError error)
-        {
-            switch (error)
-            {
-                case ServerError.NotEnoughEnergy: return "Not enough energy";
-                case ServerError.NetworkError:    return "Connection problem. Nothing was charged.";
-                default:                          return $"Error: {error}";
             }
         }
     }

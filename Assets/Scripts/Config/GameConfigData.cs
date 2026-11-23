@@ -79,6 +79,10 @@ namespace DemoCoinMaster.Config
         [Tooltip("Cost to reach level 1, 2, 3... Max level = array length.")]
         [SerializeField] private int[] buildingUpgradeCosts = { 500, 1500, 4000, 10000, 25000 };
 
+        [Header("UI")]
+        [Tooltip("A new popup ignores taps for this long, so a double tap can't close two popups at once.")]
+        [SerializeField, Min(0f)] private float popupInputLockSeconds = 0.3f;
+
         [Header("Mock server")]
         [SerializeField, Min(0)] private float serverMinDelaySeconds = 0.2f;
         [SerializeField, Min(0)] private float serverMaxDelaySeconds = 0.6f;
@@ -109,6 +113,8 @@ namespace DemoCoinMaster.Config
 
         public IReadOnlyList<int> BuildingUpgradeCosts => buildingUpgradeCosts;
         public int MaxBuildingLevel => buildingUpgradeCosts?.Length ?? 0;
+
+        public float PopupInputLockSeconds => popupInputLockSeconds;
 
         public float ServerMinDelaySeconds => serverMinDelaySeconds;
         public float ServerMaxDelaySeconds => serverMaxDelaySeconds;
