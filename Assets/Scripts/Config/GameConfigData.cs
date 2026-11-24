@@ -93,6 +93,15 @@ namespace SpinVillage.Config
         [Tooltip("Pause after the last reel lands before rewards/popups appear, so the player sees the match first.")]
         [SerializeField, Min(0f)] private float reelResultHoldSeconds = 0.6f;
 
+        [Header("Coin fly effect")]
+        [Tooltip("One flying coin per this many coins won.")]
+        [SerializeField, Min(1)] private int coinFlyCoinsPerIcon = 50;
+        [Tooltip("Most coins flying for one reward. Also the pool size.")]
+        [SerializeField, Min(1)] private int coinFlyMaxIcons = 15;
+        [SerializeField, Min(0.05f)] private float coinFlyDurationSeconds = 0.6f;
+        [Tooltip("Delay between one coin launching and the next.")]
+        [SerializeField, Min(0f)] private float coinFlySpawnIntervalSeconds = 0.04f;
+
         [Header("UI")]
         [Tooltip("A new popup ignores taps for this long, so a double tap can't close two popups at once.")]
         [SerializeField, Min(0f)] private float popupInputLockSeconds = 0.3f;
@@ -133,6 +142,11 @@ namespace SpinVillage.Config
         public float ReelStopIntervalSeconds => reelStopIntervalSeconds;
         public float ReelSymbolChangeSeconds => reelSymbolChangeSeconds;
         public float ReelResultHoldSeconds => reelResultHoldSeconds;
+
+        public int CoinFlyCoinsPerIcon => coinFlyCoinsPerIcon;
+        public int CoinFlyMaxIcons => coinFlyMaxIcons;
+        public float CoinFlyDurationSeconds => coinFlyDurationSeconds;
+        public float CoinFlySpawnIntervalSeconds => coinFlySpawnIntervalSeconds;
 
         public float PopupInputLockSeconds => popupInputLockSeconds;
 
@@ -181,8 +195,10 @@ namespace SpinVillage.Config
 
             if (reelSymbolChangeSeconds <= 0f) errors.Add("reelSymbolChangeSeconds must be > 0");
             if (reelMinSpinSeconds < 0f || reelStopIntervalSeconds < 0f || reelResultHoldSeconds < 0f ||
-                popupInputLockSeconds < 0f)
+                popupInputLockSeconds < 0f || coinFlySpawnIntervalSeconds < 0f)
                 errors.Add("UI timings must be >= 0");
+            if (coinFlyCoinsPerIcon < 1 || coinFlyMaxIcons < 1) errors.Add("coin fly counts must be >= 1");
+            if (coinFlyDurationSeconds <= 0f) errors.Add("coinFlyDurationSeconds must be > 0");
 
             if (serverMinDelaySeconds < 0f) errors.Add("serverMinDelaySeconds must be >= 0");
             if (serverMaxDelaySeconds < serverMinDelaySeconds) errors.Add("serverMaxDelaySeconds < serverMinDelaySeconds");

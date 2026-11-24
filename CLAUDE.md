@@ -50,8 +50,8 @@ Spin button -> SpinController -> IServerApi.Spin(bet) -> SpinResult -> OnSpinRes
 - Assets/Scripts/Server: MockServer (implementation)
 - Assets/Scripts/Server/Api: IServerApi and the request/result types (the contract), one type per file
 - Assets/Scripts/Core: PlayerState, SpinController, EnergyTimer, VillageController
-- Assets/Scripts/UI: ReelView, HudView, PopupManager, BuildingView
-- Assets/Scripts/Pooling: CoinFlyPool
+- Assets/Scripts/UI: ReelView, HudView, PopupManager, PopupView, BuildingView, SpinPanelView, CoinFlyPool
+- Assets/Scripts/Pooling: reserved for generic pool code. CoinFlyPool lives in UI: it depends on ReelView and HudView depends on it, so a separate folder/assembly would create a UI <-> Pooling dependency loop.
 - Assets/Resources/Config: config JSON
 - Assets/Scenes: Main.unity
 

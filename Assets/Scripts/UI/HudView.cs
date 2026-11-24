@@ -21,6 +21,8 @@ namespace SpinVillage.UI
 
         [Header("Optional: wait for reels before showing new balances")]
         [SerializeField] private ReelView reelView;
+        [Tooltip("Optional. If set, the counters update when the flying coins land.")]
+        [SerializeField] private CoinFlyPool coinFlyPool;
 
         private PlayerState playerState;
         private bool refreshPending;
@@ -47,6 +49,7 @@ namespace SpinVillage.UI
             }
 
             if (reelView != null) reelView.OnPresentationEnded += HandlePresentationEnded;
+            if (coinFlyPool != null) coinFlyPool.OnAllCoinsLanded += HandlePresentationEnded;
         }
 
         private void OnDisable()
@@ -54,13 +57,16 @@ namespace SpinVillage.UI
             if (playerState != null) playerState.OnBalanceChanged -= Refresh;
             if (energyTimer != null) energyTimer.OnCountdownChanged -= RefreshCountdown;
             if (reelView != null) reelView.OnPresentationEnded -= HandlePresentationEnded;
+            if (coinFlyPool != null) coinFlyPool.OnAllCoinsLanded -= HandlePresentationEnded;
         }
 
         private void Refresh(PlayerState state)
         {
             // PlayerState is already updated (it's the truth); only the *display* waits, so the coin
             // counter doesn't jump before the reels show why.
-            if (reelView != null && reelView.IsPresenting)
+            // Reels stop -> coins launch (IsFlying) -> OnPresentationEnded lands here and keeps waiting
+            // -> OnAllCoinsLanded -> draw. A win with no coins (shield, energy) draws when the reels stop.
+            if ((reelView != null && reelView.IsPresenting) || (coinFlyPool != null && coinFlyPool.IsFlying))
             {
                 refreshPending = true;
                 return;

@@ -497,12 +497,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 472166136}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 974551414}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 540, y: 960}
-  m_SizeDelta: {x: 1080, y: 1920}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &336110911
 MonoBehaviour:
@@ -1527,6 +1527,7 @@ GameObject:
   - component: {fileID: 974551415}
   - component: {fileID: 974551418}
   - component: {fileID: 974551419}
+  - component: {fileID: 974551420}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1621,6 +1622,8 @@ RectTransform:
   - {fileID: 1536504799}
   - {fileID: 913720253}
   - {fileID: 222619873}
+  - {fileID: 1919554703}
+  - {fileID: 336110910}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1683,6 +1686,7 @@ MonoBehaviour:
   energyTimer: {fileID: 132940754}
   energyTimerText: {fileID: 896333884}
   reelView: {fileID: 974551416}
+  coinFlyPool: {fileID: 974551420}
 --- !u!114 &974551418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1720,6 +1724,28 @@ MonoBehaviour:
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
   unaffordableColor: {r: 1, g: 0.45, b: 0.45, a: 1}
   reelView: {fileID: 974551416}
+--- !u!114 &974551420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974551410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddd7dec1d5935d04697bca84b54145e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpinVillage.UI.CoinFlyPool
+  bootstrap: {fileID: 132940751}
+  spinController: {fileID: 132940753}
+  reelView: {fileID: 974551416}
+  coinPrefab: {fileID: 4819823746890517794, guid: df6786e2e80c6e44481d58e2157d1782, type: 3}
+  coinLayer: {fileID: 1919554703}
+  flyFrom: {fileID: 2115530523}
+  flyTo: {fileID: 97746205}
+  spawnSpread: 150
+  arcHeight: 250
+  usePooling: 1
 --- !u!1 &995589614
 GameObject:
   m_ObjectHideFlags: 0
@@ -3368,6 +3394,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1876193069}
   m_CullTransparentMesh: 1
+--- !u!1 &1919554702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1919554703}
+  m_Layer: 5
+  m_Name: CoinLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1919554703
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919554702}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 974551414}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1948705139
 GameObject:
   m_ObjectHideFlags: 0
@@ -3699,5 +3760,4 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 132940752}
   - {fileID: 974551414}
-  - {fileID: 336110910}
   - {fileID: 1853095680}
