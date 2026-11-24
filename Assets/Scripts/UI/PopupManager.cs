@@ -11,11 +11,14 @@ namespace SpinVillage.UI
         Raid,
         ShieldsFull,
         NotEnoughEnergy,
+        NotEnoughCoins,
+        BuildingUpgraded,
+        VillageComplete,
         Error
     }
 
     /// <summary>
-    /// Turns spin events into popups and shows them one at a time, in order.
+    /// Turns spin and village events into popups and shows them one at a time, in order.
     ///
     /// Edge cases handled:
     /// - Queue: several popups from one spin (or quick events) are shown in order, never on top of each other.
@@ -44,6 +47,8 @@ namespace SpinVillage.UI
         [SerializeField] private PopupView popupView;
         [Tooltip("Optional. If set, reward popups (Raid, Attack, Shields full) wait until the reels stop.")]
         [SerializeField] private ReelView reelView;
+        [Tooltip("Optional. If set, upgrade results and errors become popups.")]
+        [SerializeField] private VillageController villageController;
 
         private readonly Queue<PopupRequest> queue = new Queue<PopupRequest>();
         private bool isShowing;
@@ -64,6 +69,12 @@ namespace SpinVillage.UI
             popupView.OnCloseClicked += HandleCloseClicked;
             if (reelView != null) reelView.OnReelsStopped += HandleSpinResult;
             else spinController.OnSpinResult += HandleSpinResult;
+
+            if (villageController != null)
+            {
+                villageController.OnUpgradeSucceeded += HandleUpgradeSucceeded;
+                villageController.OnUpgradeFailed += HandleUpgradeFailed;
+            }
         }
 
         private void OnDisable()
@@ -75,6 +86,42 @@ namespace SpinVillage.UI
             }
             if (reelView != null) reelView.OnReelsStopped -= HandleSpinResult;
             if (popupView != null) popupView.OnCloseClicked -= HandleCloseClicked;
+            if (villageController != null)
+            {
+                villageController.OnUpgradeSucceeded -= HandleUpgradeSucceeded;
+                villageController.OnUpgradeFailed -= HandleUpgradeFailed;
+            }
+        }
+
+        private void HandleUpgradeSucceeded(UpgradeResult result)
+        {
+            int level = result.Snapshot.BuildingLevel;
+            if (level >= villageController.MaxLevel)
+                Enqueue(PopupType.VillageComplete, "Village complete!",
+                        $"Your building reached the top level ({level}). Spent {result.CoinsSpent:N0} coins.");
+            else
+                Enqueue(PopupType.BuildingUpgraded, "Level up!",
+                        $"Your building is now level {level}. Spent {result.CoinsSpent:N0} coins.");
+        }
+
+        private void HandleUpgradeFailed(ServerError error)
+        {
+            switch (error)
+            {
+                case ServerError.RequestInProgress:
+                    break; // internal guard, not for the player
+                case ServerError.NotEnoughCoins:
+                    Enqueue(PopupType.NotEnoughCoins, "Not enough coins",
+                            $"You need {villageController.NextUpgradeCost:N0} coins for the next level. Spin to earn more!");
+                    break;
+                case ServerError.MaxLevelReached:
+                    Enqueue(PopupType.VillageComplete, "Village complete!", "This building is already at the top level.");
+                    break;
+                default:
+                    Enqueue(PopupType.Error, "Connection problem",
+                            "Something went wrong. Nothing was charged. Please try again.");
+                    break;
+            }
         }
 
         /// <summary>Queue a popup. Public so other features (village, events) can reuse the same queue.</summary>

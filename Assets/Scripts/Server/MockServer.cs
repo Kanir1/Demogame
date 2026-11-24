@@ -27,7 +27,11 @@ namespace SpinVillage.Server
         private double lastEnergyRefillTime;
 
         // Defense in depth: the client blocks double taps, but the server must not trust that.
-        private bool requestInProgress;
+        // One flag per action: a second spin while a spin is running is rejected, but a spin and an
+        // upgrade may overlap. Each one changes state in a single synchronous step on the main thread,
+        // and the client ignores out-of-order snapshots (PlayerState), so overlap is safe.
+        private bool spinInProgress;
+        private bool upgradeInProgress;
 
         /// <param name="seed">Fixed seed for repeatable tests; null = random.</param>
         /// <param name="clock">Server clock in seconds; defaults to a Stopwatch (not the device date/time).</param>
@@ -59,10 +63,10 @@ namespace SpinVillage.Server
 
         public async Awaitable<SpinResult> SpinAsync(int bet, CancellationToken ct)
         {
-            if (requestInProgress)
+            if (spinInProgress)
                 return SpinResult.Failed(ServerError.RequestInProgress, bet, Snapshot());
 
-            requestInProgress = true;
+            spinInProgress = true;
             try
             {
                 await SimulateLatency(ct);
@@ -114,16 +118,16 @@ namespace SpinVillage.Server
             }
             finally
             {
-                requestInProgress = false;
+                spinInProgress = false;
             }
         }
 
         public async Awaitable<UpgradeResult> UpgradeAsync(CancellationToken ct)
         {
-            if (requestInProgress)
+            if (upgradeInProgress)
                 return new UpgradeResult(ServerError.RequestInProgress, 0, Snapshot());
 
-            requestInProgress = true;
+            upgradeInProgress = true;
             try
             {
                 await SimulateLatency(ct);
@@ -146,7 +150,7 @@ namespace SpinVillage.Server
             }
             finally
             {
-                requestInProgress = false;
+                upgradeInProgress = false;
             }
         }
 
