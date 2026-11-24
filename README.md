@@ -19,6 +19,14 @@ Measured with `CoinFlyPool` → **Debug: Fly max coins** (the same 15-coin burst
 - **Bytes not proven:** the scoped allocation counter read 0 B even with pooling OFF, where `Instantiate` should allocate *something*, so that API likely isn't supported in this runtime. The memory benefit is therefore not claimed; it would be confirmed in the Profiler's GC Alloc column on a development build.
 - **Caveat:** Editor numbers are for comparing ON vs OFF, not absolute. Real numbers come from a development build on a target phone.
 
+## Aspect ratio check
+
+Canvas Scaler: Scale With Screen Size, reference 1080×1920. Tested in the Game view at 1080×1920 (16:9), 1080×2400 (20:9), 1170×2532 (iPhone, 19.5:9) and 1536×2048 (iPad, 4:3).
+
+- **Found:** with Match = 0.5, tall 20:9 phones shrink the canvas's usable width to ~966 units, and the three bottom buttons (~1,000 units side by side) overlapped by ~17 units (~19 px). Predicted from the scaler maths first, then confirmed at 1× zoom. At 0.25× zoom it was invisible, and a mistyped 1080×2040 test size also hid it.
+- **Fixed:** Match = 0 (match width). For a portrait-only game the layout always gets the full 1080 units of width; taller phones get extra vertical space. Re-checked all four sizes, including the iPad (shortest canvas, ~1440 units tall), with no overlaps and popups fitting.
+- **Not done:** safe area (notches / rounded corners). Next step would be a small component that fits the HUD inside `Screen.safeArea`, checked in the Device Simulator.
+
 ## Decisions (non-obvious)
 
 - **Outcome-first weights.** The server picks an *outcome* by weight (Mixed, 3x Coin, 3x Pig...) and then builds reel symbols that match it. Rolling each reel on its own would make triples very rare and hard to tune. With an outcome table, designers set the chance of each outcome directly.
