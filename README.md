@@ -4,6 +4,21 @@ A Unity 6 learning prototype of a slot-machine spin feature, inspired by Coin Ma
 
 > Personal, non-commercial learning project. Not affiliated with or endorsed by Moon Active. Coin Master is a trademark of Moon Active. All code is original, and no Coin Master art, audio or other assets are used.
 
+## Profiling result: coin pool
+
+Measured with `CoinFlyPool` → **Debug: Fly max coins** (the same 15-coin burst, no spin), 3 bursts per mode, in the Unity 6 Editor (2026-11-24). The first burst is excluded as warm-up.
+
+| 15-coin burst | Pooling ON | Pooling OFF (`Instantiate`/`Destroy` per coin) |
+| --- | --- | --- |
+| CPU in `CoinFlyPool`, whole burst | 2.51–2.62 ms (avg 2.58) | 3.39–4.07 ms (avg 3.68), **+43%** |
+| Worst single frame | 0.14–0.23 ms (avg 0.19) | 0.50–0.83 ms (avg 0.67), **~3.5× spike** |
+| Managed bytes in `CoinFlyPool` | 0 B | 0 B (inconclusive, see below) |
+
+- **Result:** pooling removes the per-coin creation cost and, more importantly on mobile, the frame spikes. The OFF numbers *under*-count, because `Destroy`'s work happens at the end of the frame, outside the timer.
+- **First attempt was inconclusive:** the engine's whole-frame "GC Allocated In Frame" counter read ~2.4–3.4 MB per burst in *both* modes. In the Editor it's dominated by Editor allocations (~15 KB/frame), which hides a few coins. Fix: measure only the script's own work (`Stopwatch` + `GC.GetAllocatedBytesForCurrentThread()` around `CoinFlyPool`'s update).
+- **Bytes not proven:** the scoped allocation counter read 0 B even with pooling OFF, where `Instantiate` should allocate *something*, so that API likely isn't supported in this runtime. The memory benefit is therefore not claimed; it would be confirmed in the Profiler's GC Alloc column on a development build.
+- **Caveat:** Editor numbers are for comparing ON vs OFF, not absolute. Real numbers come from a development build on a target phone.
+
 ## Decisions (non-obvious)
 
 - **Outcome-first weights.** The server picks an *outcome* by weight (Mixed, 3x Coin, 3x Pig...) and then builds reel symbols that match it. Rolling each reel on its own would make triples very rare and hard to tune. With an outcome table, designers set the chance of each outcome directly.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SpinVillage.Config;
 using SpinVillage.Core;
 using SpinVillage.Server;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -59,6 +60,19 @@ namespace SpinVillage.UI
         private int pendingSpawns;
         private float nextSpawnTime;
 
+        // Profiling, only during "Debug: Fly max coins".
+        // Scoped: managed bytes and CPU time spent inside this script's own work (launch + move + return).
+        // Context: the engine's whole-frame "GC Allocated In Frame" counter. In the Editor that one is
+        // dominated by Editor allocations (~15 KB/frame), which is why the scoped numbers are the result.
+        private ProfilerRecorder gcAllocRecorder;
+        private bool measuring;
+        private bool measuredWithPooling;
+        private long measuredWholeFrameBytes;
+        private long measuredScopedBytes;
+        private long measuredScopedTicks;
+        private long measuredMaxFrameTicks;
+        private int measuredFrames;
+
         /// <summary>True while coins are waiting to launch or still in the air.</summary>
         public bool IsFlying => pendingSpawns > 0 || flying.Count > 0;
 
@@ -111,6 +125,7 @@ namespace SpinVillage.UI
             else if (spinController != null) spinController.OnSpinResult -= HandleSpinResult;
 
             LandAllNow(); // don't leave HudView waiting for coins that will never land
+            StopMeasuring(log: false);
         }
 
         private void OnDestroy()
@@ -133,8 +148,38 @@ namespace SpinVillage.UI
 
         private void Update()
         {
-            if (!IsFlying) return;
+            if (measuring)
+            {
+                // LastValue = bytes the GC allocated in the previous frame (whole frame, incl. Editor).
+                measuredWholeFrameBytes += gcAllocRecorder.LastValue;
+                measuredFrames++;
+            }
 
+            if (!IsFlying)
+            {
+                if (measuring) StopMeasuring(log: true);
+                return;
+            }
+
+            // Scoped measurement starts here: only this script's work is counted.
+            long allocStart = measuring ? GC.GetAllocatedBytesForCurrentThread() : 0;
+            long ticksStart = measuring ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+
+            UpdateCoins();
+
+            if (measuring)
+            {
+                measuredScopedBytes += GC.GetAllocatedBytesForCurrentThread() - allocStart;
+                long ticks = System.Diagnostics.Stopwatch.GetTimestamp() - ticksStart;
+                measuredScopedTicks += ticks;
+                if (ticks > measuredMaxFrameTicks) measuredMaxFrameTicks = ticks;
+            }
+
+            if (!IsFlying) OnAllCoinsLanded?.Invoke();
+        }
+
+        private void UpdateCoins()
+        {
             float now = Time.time;
 
             while (pendingSpawns > 0 && now >= nextSpawnTime)
@@ -162,8 +207,6 @@ namespace SpinVillage.UI
                 float e = t * t; // ease-in: speeds up toward the counter
                 c.Coin.position = QuadraticBezier(c.Start, c.Control, end, e);
             }
-
-            if (!IsFlying) OnAllCoinsLanded?.Invoke();
         }
 
         private void Launch(float now)
@@ -204,6 +247,41 @@ namespace SpinVillage.UI
             RectTransform coin = Instantiate(coinPrefab, coinLayer);
             coin.gameObject.SetActive(active);
             return coin;
+        }
+
+        // Profiling hook: the same burst every time, with no spin, so the only difference between
+        // two measurements is usePooling. (A real spin also allocates log strings, results, etc.)
+        [ContextMenu("Debug: Fly max coins")]
+        private void DebugFlyMaxCoins()
+        {
+            if (!Application.isPlaying || !enabled || IsFlying) return;
+
+            if (!gcAllocRecorder.Valid)
+                gcAllocRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+            measuring = true;
+            measuredWithPooling = usePooling;
+            measuredWholeFrameBytes = 0;
+            measuredScopedBytes = 0;
+            measuredScopedTicks = 0;
+            measuredMaxFrameTicks = 0;
+            measuredFrames = 0;
+
+            pendingSpawns += config.CoinFlyMaxIcons;
+            if (nextSpawnTime < Time.time) nextSpawnTime = Time.time;
+        }
+
+        private void StopMeasuring(bool log)
+        {
+            if (log && measuring)
+            {
+                double msPerTick = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+                Debug.Log($"[CoinFlyPool] Burst of {config.CoinFlyMaxIcons} coins, pooling {(measuredWithPooling ? "ON" : "OFF")}: " +
+                          $"CoinFlyPool code allocated {measuredScopedBytes:N0} B, " +
+                          $"CPU {measuredScopedTicks * msPerTick:F2} ms total (max {measuredMaxFrameTicks * msPerTick:F3} ms in one frame) " +
+                          $"over {measuredFrames} frames. Context: whole frame incl. Editor {measuredWholeFrameBytes:N0} B.", this);
+            }
+            measuring = false;
+            if (gcAllocRecorder.Valid) gcAllocRecorder.Dispose();
         }
 
         private static Vector3 QuadraticBezier(Vector3 a, Vector3 b, Vector3 c, float t)
